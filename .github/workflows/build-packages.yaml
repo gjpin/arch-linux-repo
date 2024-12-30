@@ -57,7 +57,7 @@ jobs:
           done
 
           # Move built packages to workspace
-          mv /home/builder/build-output/* /github/workspace/x86_64
+          mv /home/builder/new_packages/* /github/workspace/x86_64
 
           # Add packages to repo
           repo-add /github/workspace/x86_64/custom.db.tar.gz /github/workspace/x86_64/*.pkg.tar.zst
