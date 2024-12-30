@@ -1,0 +1,73 @@
+name: Build AUR Packages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Daily build
+
+jobs:
+  check-packages:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Update packages and install git
+      run: |
+        pacman -Syyu --noconfirm
+        pacman -S --noconfirm git
+
+    - name: Create non-root user
+      run: |
+        useradd -m -s /bin/bash builder
+        echo "builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+    - name: Install paru as non-root user
+      run: |
+        sudo -u builder bash -c '
+          git clone https://aur.archlinux.org/paru-bin.git /home/builder/paru-bin
+          makepkg -si --noconfirm --dir /home/builder/paru-bin
+        '
+
+    - name: Build AUR packages
+      run: |
+        sudo -u builder bash -c '
+          # Create directories
+          mkdir -p /home/builder/packages
+          mkdir -p /github/workspace/x86_64
+
+          # Packages list
+          packages=(
+            "wlx-overlay-s-git"
+            "opencomposite-git"
+            "monado-git"    
+            "wivrn-server"
+            "wivrn-dashboard"
+          )
+
+          # Build packages and add them to repo
+          for pkg in "${packages[@]}"; do
+            # Clone AUR package
+            git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
+
+            # Build package
+            makepkg -s --noconfirm --dir /github/workspace/x86_64/
+          done
+
+          # Add packages to repo
+          repo-add /github/workspace/x86_64/custom.db.tar.gz /github/workspace/x86_64/*.pkg.tar.zst
+        '
+
+    - name: Commit and Push Repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd /github/workspace/x86_64
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add .
+        git commit -m "Update AUR packages"
+        git push origin main
