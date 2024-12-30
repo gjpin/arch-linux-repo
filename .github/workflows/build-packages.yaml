@@ -41,11 +41,7 @@ jobs:
 
           # Packages list
           packages=(
-            "wlx-overlay-s-git"
             "opencomposite-git"
-            "monado-git"    
-            "wivrn-server"
-            "wivrn-dashboard"
           )
 
           # Build packages and add them to repo
@@ -54,13 +50,14 @@ jobs:
             git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
 
             # Build package
-            makepkg -s --noconfirm --dir /home/builder/packages/$pkg
+            paru -B --noconfirm /home/builder/packages/$pkg
           done
 
           # Add packages to repo
           repo-add $PKGDEST/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
         '
         # Move built packages to workspace
+        mkdir -p /github/workspace/x86_64
         mv /home/builder/new_packages/* /github/workspace/x86_64
 
     - name: Commit and Push Repo
