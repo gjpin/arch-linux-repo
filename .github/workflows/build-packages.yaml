@@ -37,6 +37,7 @@ jobs:
         sudo -u builder bash -c '
           # Create directories
           mkdir -p /home/builder/{packages,new_packages}
+          export PKGDEST=/home/builder/new_packages
 
           # Packages list
           packages=(
@@ -53,15 +54,14 @@ jobs:
             git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
 
             # Build package
-            makepkg -s --noconfirm --dir /home/builder/new_packages
+            makepkg -s --noconfirm --dir /home/builder/packages/$pkg
           done
 
-          # Move built packages to workspace
-          mv /home/builder/new_packages/* /github/workspace/x86_64
-
           # Add packages to repo
-          repo-add /github/workspace/x86_64/custom.db.tar.gz /github/workspace/x86_64/*.pkg.tar.zst
+          repo-add $PKGDEST/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
         '
+        # Move built packages to workspace
+        mv /home/builder/new_packages/* /github/workspace/x86_64
 
     - name: Commit and Push Repo
       env:
