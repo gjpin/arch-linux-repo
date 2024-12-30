@@ -64,8 +64,6 @@ jobs:
         mv /home/builder/new_packages/* /github/workspace/x86_64
 
     - name: Commit and Push Repo
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd /github/workspace/x86_64
         git config user.name "github-actions"
