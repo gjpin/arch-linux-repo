@@ -65,9 +65,8 @@ jobs:
 
     - name: Commit and Push Repo
       run: |
-        cd /github/workspace/x86_64
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git add .
+        git add x86_64
         git commit -m "Update AUR packages"
-        git push
+        git push origin main
