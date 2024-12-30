@@ -3,10 +3,10 @@ name: Build AUR Packages
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Daily build
+    - cron: '0 0 * * 0' # Weekly build (every Sunday at midnight)
 
 jobs:
-  check-packages:
+  build-packages:
     runs-on: ubuntu-latest
     container:
       image: archlinux:base-devel
@@ -68,9 +68,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd /github/workspace/x86_64
-        git init
+        git config --global init.defaultBranch main
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
+        git init
         git add .
         git commit -m "Update AUR packages"
         git push origin main
