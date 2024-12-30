@@ -36,8 +36,7 @@ jobs:
       run: |
         sudo -u builder bash -c '
           # Create directories
-          mkdir -p /home/builder/packages
-          mkdir -p /github/workspace/x86_64
+          mkdir -p /home/builder/{packages,new_packages}
 
           # Packages list
           packages=(
@@ -54,8 +53,11 @@ jobs:
             git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
 
             # Build package
-            makepkg -s --noconfirm --dir /github/workspace/x86_64/
+            makepkg -s --noconfirm --dir /home/builder/new_packages
           done
+
+          # Move built packages to workspace
+          mv /home/builder/build-output/* /github/workspace/x86_64
 
           # Add packages to repo
           repo-add /github/workspace/x86_64/custom.db.tar.gz /github/workspace/x86_64/*.pkg.tar.zst
