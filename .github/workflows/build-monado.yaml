@@ -1,8 +1,8 @@
 # References:
-# https://github.com/galister/wlx-overlay-s/wiki/Building-from-Source
-# https://aur.archlinux.org/packages/wlx-overlay-s-git
+# https://gitlab.freedesktop.org/monado/monado
+# https://aur.archlinux.org/packages/monado-git
 
-name: Build WlxOverlay-S
+name: Build Monado
 
 on:
   workflow_dispatch:
@@ -24,14 +24,14 @@ jobs:
         pacman -Syyu --noconfirm
         pacman -S --noconfirm --needed git
 
-    - name: Clone wlx-overlay-s repo
+    - name: Clone Monado repo
       run: |
-        git clone --recursive https://github.com/galister/wlx-overlay-s.git
+        git clone --recursive https://gitlab.freedesktop.org/monado/monado.git
 
     - name: Get latest short commit hash
       id: get_commit
       run: |
-        echo "commit=$(git --git-dir=wlx-overlay-s/.git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "commit=$(git --git-dir=OpenOVR/.git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Check if commit is already released
       id: check_release
@@ -52,42 +52,34 @@ jobs:
         echo "No changes since the last release. Exiting gracefully."
         exit 0
 
-    - name: Install wlx-overlay-s dependencies
+    - name: Install Monado dependencies
       run: |
-        # Install base dependencies
-        pacman -S --noconfirm --needed cmake libxkbcommon fontconfig dbus alsa-lib python3 libxkbcommon-x11
+        pacman -S --noconfirm --needed cmake python vulkan-headers glad eigen glslang libusb systemd-libs \
+          v4l-utils libxcb ninja shaderc bluez-libs opencv cjson onnxruntime libjpeg-turbo libevent doxygen \
+          hidapi graphviz zlib openmpi qt6-declarative qt6-base
 
-        # Install rust
-        pacman -S --noconfirm --needed rust
-
-        # openvr support
-        pacman -S --noconfirm --needed openvr
-
-        # openxr support
-        pacman -S --noconfirm --needed openxr
-
-        # wayland support
-        pacman -S --noconfirm --needed pipewire
-
-        # x11 support
-        pacman -S --noconfirm --needed libx11 libxext libxrandr
-
-        # pipewire support
-        pacman -S --noconfirm --needed libpipewire clang
-
-        # wayvr support
-        pacman -S --noconfirm --needed wayland libglvnd
-
-    - name: Build wlx-overlay-s with all features
+    - name: Build Monado
       run: |
-        cargo build --release --manifest-path wlx-overlay-s/Cargo.toml
+        cmake -B build -S monado
+        cmake --build build
+
+    - name: Find dynamic file
+      id: find_file
+      run: |
+        libmonado_path=$(find build/src/xrt/targets/libmonado -name 'libmonado.so.*' | head -n 1)
+        if [ -z "$libmonado_path" ]; then
+          echo "File not found!"
+          exit 1
+        fi
+        echo "libmonado_path=$libmonado_path" >> $GITHUB_ENV
 
     - name: Upload to GitHub Releases
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          wlx-overlay-s/target/release/wlx-overlay-s
+          build/src/xrt/targets/openxr/libopenxr_monado.so
+          ${{ env.libmonado_path }}
         tag_name: ${{ env.commit }}
-        name: WlxOverlay-S - ${{ env.commit }}
+        name: Monado - ${{ env.commit }}
         body: |
           Automated build and release from commit: ${{ env.commit }}

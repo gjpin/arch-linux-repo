@@ -22,7 +22,7 @@ jobs:
     - name: Update packages and install git
       run: |
         pacman -Syyu --noconfirm
-        pacman -S --noconfirm git
+        pacman -S --noconfirm --needed git
 
     - name: Clone OpenComposite repo
       run: |
@@ -54,7 +54,7 @@ jobs:
 
     - name: Install OpenComposite dependencies
       run: |
-        pacman -S --noconfirm cmake make vulkan-headers libglvnd python vulkan-icd-loader
+        pacman -S --noconfirm --needed cmake make vulkan-headers libglvnd python
 
     - name: Build OpenComposite
       run: |
