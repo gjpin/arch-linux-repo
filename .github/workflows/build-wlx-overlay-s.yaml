@@ -16,6 +16,9 @@ jobs:
       image: archlinux:base-devel
 
     steps:
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.7
+
     - name: Update packages
       run: |
         pacman -Syyu --noconfirm
@@ -23,7 +26,7 @@ jobs:
     - name: Install base dependencies
       run: |
         # Install base dependencies
-        pacman -S --noconfirm git base-devel cmake libxkbcommon fontconfig dbus alsa-lib python3
+        pacman -S --noconfirm git base-devel cmake libxkbcommon fontconfig dbus alsa-lib python3 libxkbcommon-x11
 
         # Install rust
         pacman -S --noconfirm rust
@@ -48,14 +51,25 @@ jobs:
         # wayvr support
         pacman -S --noconfirm wayland libglvnd
 
-    - name: Clone repo and build wlx-overlay-s with all features
+    - name: Clone wlx-overlay-s repo
       run: |
         git clone https://github.com/galister/wlx-overlay-s.git
-        cd wlx-overlay-s
-        cargo build --release
+
+    - name: Get latest commit hash
+      id: get_commit
+      run: |
+        echo "commit=$(git --git-dir=wlx-overlay-s/.git rev-parse HEAD)" >> $GITHUB_ENV
+
+    - name: Build wlx-overlay-s with all features
+      run: |
+        cargo build --release --manifest-path wlx-overlay-s/Cargo.toml
 
     - name: Upload to GitHub Releases
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          target/release/wlx-overlay-s
+          wlx-overlay-s/target/release/wlx-overlay-s
+        tag_name: ${{ env.commit }}
+        name: wlx-overlay-s - ${{ env.commit }}
+        body: |
+          Automated build and release from commit: ${{ env.commit }}
