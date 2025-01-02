@@ -1,8 +1,8 @@
 # References:
-# https://github.com/galister/wlx-overlay-s/wiki/Building-from-Source
-# https://aur.archlinux.org/packages/wlx-overlay-s-git
+# https://gitlab.com/znixian/OpenOVR
+# https://aur.archlinux.org/packages/opencomposite-git
 
-name: Build WlxOverlay-S
+name: Build OpenComposite
 
 on:
   workflow_dispatch:
@@ -24,14 +24,14 @@ jobs:
         pacman -Syyu --noconfirm
         pacman -S --noconfirm git
 
-    - name: Clone wlx-overlay-s repo
+    - name: Clone OpenComposite repo
       run: |
-        git clone https://github.com/galister/wlx-overlay-s.git
+        git clone https://gitlab.com/znixian/OpenOVR.git
 
     - name: Get latest short commit hash
       id: get_commit
       run: |
-        echo "commit=$(git --git-dir=wlx-overlay-s/.git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "commit=$(git --git-dir=OpenOVR/.git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Check if commit is already released
       id: check_release
@@ -52,42 +52,21 @@ jobs:
         echo "No changes since the last release. Exiting gracefully."
         exit 0
 
-    - name: Install wlx-overlay-s dependencies
+    - name: Install OpenComposite dependencies
       run: |
-        # Install base dependencies
-        pacman -S --noconfirm cmake libxkbcommon fontconfig dbus alsa-lib python3 libxkbcommon-x11
+        pacman -S --noconfirm cmake make vulkan-headers libglvnd python vulkan-icd-loader
 
-        # Install rust
-        pacman -S --noconfirm rust
-
-        # openvr support
-        pacman -S --noconfirm openvr
-
-        # openxr support
-        pacman -S --noconfirm openxr
-
-        # wayland support
-        pacman -S --noconfirm pipewire
-
-        # x11 support
-        pacman -S --noconfirm libx11 libxext libxrandr
-
-        # pipewire support
-        pacman -S --noconfirm libpipewire clang
-
-        # wayvr support
-        pacman -S --noconfirm wayland libglvnd
-
-    - name: Build wlx-overlay-s with all features
+    - name: Build OpenComposite
       run: |
-        cargo build --release --manifest-path wlx-overlay-s/Cargo.toml
+        cmake -B build -S OpenOVR
+        cmake --build build
 
     - name: Upload to GitHub Releases
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          wlx-overlay-s/target/release/wlx-overlay-s
+          OpenOVR/build/bin/linux64/vrclient.so
         tag_name: ${{ env.commit }}
-        name: wlx-overlay-s - ${{ env.commit }}
+        name: OpenComposite - ${{ env.commit }}
         body: |
           Automated build and release from commit: ${{ env.commit }}
