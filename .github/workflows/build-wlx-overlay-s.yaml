@@ -48,13 +48,10 @@ jobs:
         # wayvr support
         pacman -S --noconfirm wayland libglvnd
 
-    - name: Clone wlx-overlay-s repo
+    - name: Clone repo and build wlx-overlay-s with all features
       run: |
         git clone https://github.com/galister/wlx-overlay-s.git
         cd wlx-overlay-s
-
-    - name: Build wlx-overlay-s with all features
-      run: |
         cargo build --release
 
     - name: Upload to GitHub Releases
