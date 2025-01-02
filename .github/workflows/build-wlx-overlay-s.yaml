@@ -19,20 +19,47 @@ jobs:
     - name: Setup sccache
       uses: mozilla-actions/sccache-action@v0.0.7
 
-    - name: Update packages
+    - name: Update packages and install git
       run: |
         pacman -Syyu --noconfirm
+        pacman -S --noconfirm git
 
-    - name: Install base dependencies
+    - name: Clone wlx-overlay-s repo
+      run: |
+        git clone https://github.com/galister/wlx-overlay-s.git
+
+    - name: Get latest short commit hash
+      id: get_commit
+      run: |
+        echo "commit=$(git --git-dir=wlx-overlay-s/.git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    - name: Check if commit is already released
+      id: check_release
+      run: |
+        latest_release=$(gh release view --json tagName --jq '.tagName' 2>/dev/null || echo "")
+        if [[ "$latest_release" == "${{ env.commit }}" ]]; then
+          echo "The latest release already matches the current commit (${latest_release})."
+          echo "should_build=false" >> $GITHUB_ENV
+        else
+          echo "should_build=true" >> $GITHUB_ENV
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Stop if no build is needed
+      if: env.should_build == 'false'
+      run: |
+        echo "No changes since the last release. Exiting gracefully."
+        exit 0
+
+    - name: Install wlx-overlay-s dependencies
       run: |
         # Install base dependencies
-        pacman -S --noconfirm git base-devel cmake libxkbcommon fontconfig dbus alsa-lib python3 libxkbcommon-x11
+        pacman -S --noconfirm cmake libxkbcommon fontconfig dbus alsa-lib python3 libxkbcommon-x11
 
         # Install rust
         pacman -S --noconfirm rust
 
-    - name: Install wlx-overlay-s features dependencies
-      run: |
         # openvr support
         pacman -S --noconfirm openvr
 
@@ -50,15 +77,6 @@ jobs:
 
         # wayvr support
         pacman -S --noconfirm wayland libglvnd
-
-    - name: Clone wlx-overlay-s repo
-      run: |
-        git clone https://github.com/galister/wlx-overlay-s.git
-
-    - name: Get latest commit hash
-      id: get_commit
-      run: |
-        echo "commit=$(git --git-dir=wlx-overlay-s/.git rev-parse HEAD)" >> $GITHUB_ENV
 
     - name: Build wlx-overlay-s with all features
       run: |
