@@ -65,7 +65,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          OpenOVR/build/bin/linux64/vrclient.so
+          build/bin/linux64/vrclient.so
         tag_name: ${{ env.commit }}
         name: OpenComposite - ${{ env.commit }}
         body: |
