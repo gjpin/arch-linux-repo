@@ -26,7 +26,7 @@ jobs:
 
     - name: Clone OpenComposite repo
       run: |
-        git clone https://gitlab.com/znixian/OpenOVR.git
+        git clone --recursive https://gitlab.com/znixian/OpenOVR.git
 
     - name: Get latest short commit hash
       id: get_commit
