@@ -15,10 +15,10 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    # - name: Update packages and install git
-    #   run: |
-    #     pacman -Syyu --noconfirm
-    #     pacman -S --noconfirm --needed git
+    - name: Update packages and install git
+      run: |
+        pacman -Syyu --noconfirm
+        pacman -S --noconfirm --needed git
 
     # - name: Create non-root user
     #   run: |
@@ -62,11 +62,11 @@ jobs:
 
     # - name: Move Built Packages to /repo
     #   run: |
-    #     mkdir -p ${{ github.workspace }}/repo
-    #     mv /home/builder/new_packages/* ${{ github.workspace }}/repo
+    #     mkdir -p /__w/arch-linux-repo/arch-linux-repo/repo
+    #     mv /home/builder/new_packages/* /__w/arch-linux-repo/arch-linux-repo/repo
 
     - name: Commit and Push Repo
-      working-directory: ${{ github.workspace }}
+      working-directory: /__w/arch-linux-repo/arch-linux-repo
       run: |
         pwd
         ls -la
