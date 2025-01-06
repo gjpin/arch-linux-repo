@@ -59,14 +59,16 @@ jobs:
           # Add packages to repo
           repo-add $PKGDEST/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
         '
-        # Move built packages to workspace
-        mkdir -p /github/workspace/x86_64
-        mv /home/builder/new_packages/* /github/workspace/x86_64
+
+    - name: Move Built Packages to /repo
+      run: |
+        mkdir -p ./repo
+        mv /home/builder/new_packages/* ./repo
 
     - name: Commit and Push Repo
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git add x86_64
+        git add repo
         git commit -m "Update AUR packages"
         git push origin main
