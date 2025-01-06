@@ -70,6 +70,7 @@ jobs:
 
     - name: Debug Working Directory
       run: |
+        cd $GITHUB_WORKSPACE
         pwd
         ls -la
 
