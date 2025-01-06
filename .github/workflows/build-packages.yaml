@@ -70,7 +70,7 @@ jobs:
 
     - name: Debug Working Directory
       run: |
-        cd $GITHUB_WORKSPACE
+        cd /home/runner/work/arch-linux-repo/arch-linux-repo
         pwd
         ls -la
 
