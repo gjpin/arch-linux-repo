@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
 
     - name: Update packages and install git
       run: |
@@ -65,19 +67,19 @@ jobs:
 
     - name: Move Built Packages to /repo
       run: |
-        mkdir -p repo/
-        # mv /home/builder/new_packages/* repo/
+        mkdir -p repo
+        # mv /home/builder/new_packages/* repo
 
     - name: Debug Working Directory
       run: |
-        cd /home/runner/work/arch-linux-repo/arch-linux-repo
+        cd $GITHUB_WORKSPACE
         pwd
         ls -la
 
     - name: Commit and Push Repo
       run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git add repo/
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add repo
         git commit -a "Update AUR packages"
         git push
