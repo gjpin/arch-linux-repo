@@ -37,43 +37,15 @@ jobs:
           makepkg -si --noconfirm --dir /home/builder/paru-bin
         '
 
-    - name: Build AUR packages
-      run: |
-        sudo -u builder bash -c '
-          # Disable debug builds
-          echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
-
-          # Create directories
-          mkdir -p /home/builder/{packages,new_packages}
-          export PKGDEST=/home/builder/new_packages
-
-          # Packages list
-          packages=(
-            "opencomposite-git"
-          )
-
-          # Build packages and add them to repo
-          for pkg in "${packages[@]}"; do
-            # Clone AUR package
-            git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
-
-            # Build package
-            paru -B --noconfirm /home/builder/packages/$pkg
-          done
-
-          # Add packages to repo
-          repo-add $PKGDEST/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
-        '
-
     - name: Move Built Packages to /repo
       run: |
         mkdir -p repo
-        mv /home/builder/new_packages/* repo
 
     - name: Commit and Push Repo
       run: |
         pwd
-        ls -la
+        ls -la .git
+        cat .git/HEAD
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git add repo
