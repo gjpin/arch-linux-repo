@@ -47,7 +47,6 @@ jobs:
           # Create directories
           mkdir -p /home/builder/{packages,new_packages}
           export PKGDEST=/home/builder/new_packages
-          mkdir -p repo
 
           # Packages list
           packages=(
