@@ -19,6 +19,7 @@ jobs:
       run: |
         pacman -Syyu --noconfirm
         pacman -S --noconfirm --needed git
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Checkout Repository
       uses: actions/checkout@v4
