@@ -66,8 +66,8 @@ jobs:
             paru -B --noconfirm /home/builder/packages/$pkg
           done
 
-          # Add packages to repo
-          repo-add repo/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
+            # Add packages to repo
+            repo-add repo/custom.db.tar.gz $PKGDEST/$pkg-*.pkg.tar.zst
         '
 
     - name: Move Built Packages to /repo
