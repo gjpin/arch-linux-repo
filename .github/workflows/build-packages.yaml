@@ -15,66 +15,60 @@ jobs:
       image: archlinux:base-devel
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ github.head_ref }}
-
     - name: Update packages and install git
       run: |
         pacman -Syyu --noconfirm
         pacman -S --noconfirm --needed git
 
-    # - name: Create non-root user
-    #   run: |
-    #     useradd -m -s /bin/bash builder
-    #     echo "builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
 
-    # - name: Install paru as non-root user
-    #   run: |
-    #     sudo -u builder bash -c '
-    #       git clone https://aur.archlinux.org/paru-bin.git /home/builder/paru-bin
-    #       makepkg -si --noconfirm --dir /home/builder/paru-bin
-    #     '
+    - name: Create non-root user
+      run: |
+        useradd -m -s /bin/bash builder
+        echo "builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-    # - name: Build AUR packages
-    #   run: |
-    #     sudo -u builder bash -c '
-    #       # Disable debug builds
-    #       echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
+    - name: Install paru as non-root user
+      run: |
+        sudo -u builder bash -c '
+          git clone https://aur.archlinux.org/paru-bin.git /home/builder/paru-bin
+          makepkg -si --noconfirm --dir /home/builder/paru-bin
+        '
 
-    #       # Create directories
-    #       mkdir -p /home/builder/{packages,new_packages}
-    #       export PKGDEST=/home/builder/new_packages
+    - name: Build AUR packages
+      run: |
+        sudo -u builder bash -c '
+          # Disable debug builds
+          echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
 
-    #       # Packages list
-    #       packages=(
-    #         "opencomposite-git"
-    #       )
+          # Create directories
+          mkdir -p /home/builder/{packages,new_packages}
+          export PKGDEST=/home/builder/new_packages
 
-    #       # Build packages and add them to repo
-    #       for pkg in "${packages[@]}"; do
-    #         # Clone AUR package
-    #         git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
+          # Packages list
+          packages=(
+            "opencomposite-git"
+          )
 
-    #         # Build package
-    #         paru -B --noconfirm /home/builder/packages/$pkg
-    #       done
+          # Build packages and add them to repo
+          for pkg in "${packages[@]}"; do
+            # Clone AUR package
+            git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
 
-    #       # Add packages to repo
-    #       repo-add $PKGDEST/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
-        # '
+            # Build package
+            paru -B --noconfirm /home/builder/packages/$pkg
+          done
+
+          # Add packages to repo
+          repo-add $PKGDEST/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
+        '
 
     - name: Move Built Packages to /repo
       run: |
         mkdir -p repo
-        # mv /home/builder/new_packages/* repo
-
-    - name: Debug Working Directory
-      run: |
-        cd $GITHUB_WORKSPACE
-        pwd
-        ls -la
+        mv /home/builder/new_packages/* repo
 
     - name: Commit and Push Repo
       run: |
