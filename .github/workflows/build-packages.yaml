@@ -50,7 +50,11 @@ jobs:
 
           # Packages list
           packages=(
+            "wlx-overlay-s-git"
             "opencomposite-git"
+            "monado-git"    
+            "wivrn-server"
+            "wivrn-dashboard"
           )
 
           # Build packages and add them to repo
@@ -63,7 +67,7 @@ jobs:
           done
 
           # Add packages to repo
-          repo-add $PKGDEST/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
+          repo-add repo/custom.db.tar.gz $PKGDEST/*.pkg.tar.zst
         '
 
     - name: Move Built Packages to /repo
