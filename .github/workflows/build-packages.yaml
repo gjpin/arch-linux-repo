@@ -47,6 +47,7 @@ jobs:
           # Create directories
           mkdir -p /home/builder/{packages,new_packages}
           export PKGDEST=/home/builder/new_packages
+          mkdir -p repo
 
           # Packages list
           packages=(
@@ -64,17 +65,15 @@ jobs:
 
             # Build package
             paru -B --noconfirm /home/builder/packages/$pkg
-          done
+
+            # Move built package to /repo
+            mv /home/builder/new_packages/$pkg-*.pkg.tar.zst repo
 
             # Add packages to repo
-            repo-add repo/custom.db.tar.gz $PKGDEST/$pkg-*.pkg.tar.zst
+            repo-add repo/custom.db.tar.zst repo/$pkg-*.pkg.tar.zst
+          done
         '
-
-    - name: Move Built Packages to /repo
-      run: |
-        mkdir -p repo
-        mv /home/builder/new_packages/* repo
-
+        
     - name: Commit and Push Repo
       run: |
         git config user.name "github-actions[bot]"
