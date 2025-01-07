@@ -67,10 +67,10 @@ jobs:
             paru -B --noconfirm /home/builder/packages/$pkg
 
             # Move built package to /repo
-            mv /home/builder/new_packages/$pkg-*.pkg.tar.zst repo
+            mv $PKGDEST/* repo
 
-            # Add packages to repo
-            repo-add repo/custom.db.tar.zst repo/$pkg-*.pkg.tar.zst
+            # Add package to repo
+            repo-add repo/custom.db.tar.zst repo/*
           done
         '
         
