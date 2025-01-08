@@ -69,6 +69,7 @@ jobs:
 
     - name: Add packages to repo
       run: |
+        mkdir -p repo
         mv /home/builder/new_packages/* repo
         repo-add repo/custom.db.tar.zst repo/*
         
