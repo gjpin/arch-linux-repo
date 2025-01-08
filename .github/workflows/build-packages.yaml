@@ -64,14 +64,13 @@ jobs:
 
             # Build package
             paru -B --noconfirm /home/builder/packages/$pkg
-
-            # Move built package to /repo
-            mv $PKGDEST/* repo
-
-            # Add package to repo
-            repo-add repo/custom.db.tar.zst repo/*
           done
         '
+
+    - name: Add packages to repo
+      run: |
+        mv /home/builder/new_packages/* repo
+        repo-add repo/custom.db.tar.zst repo/*
         
     - name: Commit and Push Repo
       run: |
