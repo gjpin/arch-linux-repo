@@ -6,8 +6,6 @@ name: Build OpenComposite
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 0' # Weekly build (every Sunday at midnight)
 
 jobs:
   build:
