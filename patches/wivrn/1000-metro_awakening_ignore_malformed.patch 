@@ -1,0 +1,39 @@
+From 3fe8fe41af781d18a61c644e7446c8c91f8365be Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Cl=C3=A1udio=20=27Patola=27=20Sampaio?= <patola@gmail.com>
+Date: Sun, 19 Jan 2025 15:01:57 +0100
+Subject: [PATCH] Ignored malformed flags from metro awakening init
+
+---
+ src/xrt/state_trackers/oxr/oxr_api_space.c     | 2 +-
+ src/xrt/state_trackers/oxr/oxr_api_swapchain.c | 3 +--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/xrt/state_trackers/oxr/oxr_api_space.c b/src/xrt/state_trackers/oxr/oxr_api_space.c
+index 8526b6644..896507685 100644
+--- a/src/xrt/state_trackers/oxr/oxr_api_space.c
++++ b/src/xrt/state_trackers/oxr/oxr_api_space.c
+@@ -232,7 +232,7 @@ oxr_xrLocateSpace(XrSpace space, XrSpace baseSpace, XrTime time, XrSpaceLocation
+        OXR_VERIFY_SPACE_NOT_NULL(&log, baseSpace, baseSpc);
+        OXR_VERIFY_ARG_TYPE_AND_NOT_NULL(&log, location, XR_TYPE_SPACE_LOCATION);
+ 
+-       if (time <= (XrTime)0) {
++       if (time < (XrTime)0) {
+                return oxr_error(&log, XR_ERROR_TIME_INVALID, "(time == %" PRIi64 ") is not a valid time.", time);
+        }
+ 
+diff --git a/src/xrt/state_trackers/oxr/oxr_api_swapchain.c b/src/xrt/state_trackers/oxr/oxr_api_swapchain.c
+index 20f371312..c697f27e8 100644
+--- a/src/xrt/state_trackers/oxr/oxr_api_swapchain.c
++++ b/src/xrt/state_trackers/oxr/oxr_api_swapchain.c
+@@ -98,8 +98,7 @@ oxr_xrCreateSwapchain(XrSession session, const XrSwapchainCreateInfo *createInfo
+        }
+ 
+        if ((createInfo->usageFlags & ~flags) != 0) {
+-               return oxr_error(&log, XR_ERROR_VALIDATION_FAILURE,
+-                                "(createInfo->usageFlags == 0x%04" PRIx64 ") contains invalid flags",
++               oxr_warn(&log, "(createInfo->usageFlags == 0x%04" PRIx64 ") contains invalid flags",
+                                 createInfo->usageFlags);
+        }
+        bool format_supported = false;
+-- 
+2.48.1

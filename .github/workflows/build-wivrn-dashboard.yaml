@@ -18,7 +18,7 @@ jobs:
     - name: Update packages and install git
       run: |
         pacman -Syyu --noconfirm
-        pacman -S --noconfirm --needed git gnupg
+        pacman -S --noconfirm --needed git gnupg pacman-contrib
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Checkout Repository
@@ -48,25 +48,15 @@ jobs:
           mkdir -p /home/builder/{packages,new_packages}
           export PKGDEST=/home/builder/new_packages
 
-          # Packages list
-          packages=(
-            "xr-hardware-git"
-            "monado-git"    
-            "opencomposite-git"
-            "wlx-overlay-s-git"
-            "wivrn-server"
-            "wivrn-dashboard"
-            "alvr-git"
-          )
+          # Clone wivrn-dashboard PKGBUILD
+          git clone "https://aur.archlinux.org/wivrn-dashboard.git" /home/builder/packages/wivrn-dashboard
 
-          # Build packages and add them to repo
-          for pkg in "${packages[@]}"; do
-            # Clone AUR package
-            git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
+          # Modify PKGBUILD to include patch
+          sed -i '/^source=(/ {s|("\(.*\)")|(\n  "\1"\n  https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\n)|;}' /home/builder/packages/wivrn-server/PKGBUILD
+          sed -i '/^sha256sums=/ {s|('\''\(.*\)'\'')|(\n  '\''\1'\''\n  '\''SKIP'\''\n)|;}' /home/builder/packages/wivrn-server/PKGBUILD
+          sed -i '/^build() {/a\        cp $srcdir/1000-metro_awakening_ignore_malformed.patch" "WiVRn-$pkgver/patches/monado' /home/builder/packages/wivrn-server/PKGBUILD
 
-            # Build package
-            paru -B --noconfirm /home/builder/packages/$pkg
-          done
+          paru -B --noconfirm /home/builder/packages/wivrn-dashboard
         '
 
     - name: Add packages to repo
