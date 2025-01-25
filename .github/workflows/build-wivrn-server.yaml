@@ -40,9 +40,9 @@ jobs:
 
     - name: Build AUR packages
       run: |
-        sudo -u builder bash -c "
+        sudo -u builder bash -c '
           # Disable debug builds
-          echo 'OPTIONS=(!debug)' > /home/builder/.makepkg.conf
+          echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
 
           # Create directories
           mkdir -p /home/builder/{packages,new_packages}
@@ -52,26 +52,13 @@ jobs:
           git clone https://aur.archlinux.org/wivrn-server.git /home/builder/packages/wivrn-server
 
           # Modify PKGBUILD to include patch
-          sed -i '/^source=(/ {
-              s|(\"\\(.*\\)\")|(\n  \"\\1\"\n  https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\n)|;
-          }' /home/builder/packages/wivrn-server/PKGBUILD
-
-          sed -i '/^sha256sums=/ {
-              s|('\''\\(.*\\)'\'')|(\n  '\''\\1'\''\n  '\''SKIP'\''\n)|;
-          }' /home/builder/packages/wivrn-server/PKGBUILD
-
-          sed -i '/^build() {/,/^}/ {
-              /^\s*cd \"WiVRn-\$pkgver\"/i \
-                  cp \"\$srcdir\/1000-metro_awakening_ignore_malformed.patch\" \"WiVRn-\$pkgver\/patches\/monado\"
-          }' /home/builder/packages/wivrn-server/PKGBUILD
-
-          # sed -i '/^source=(/ {s|("\(.*\)")|(\n  "\1"\n  https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\n)|;}' /home/builder/packages/wivrn-server/PKGBUILD
-          # sed -i '/^sha256sums=/ {s|('\''\(.*\)'\'')|(\n  '\''\1'\''\n  '\''SKIP'\''\n)|;}' /home/builder/packages/wivrn-server/PKGBUILD
-          # sed -i '/^build() {/a\        cp $srcdir/1000-metro_awakening_ignore_malformed.patch" "WiVRn-$pkgver/patches/monado' /home/builder/packages/wivrn-server/PKGBUILD
+          sed -i "/^source=(/ {s|(\"\\(.*\\)\")|(\n  \"\\1\"\n  \"https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\"\n)|;}" /home/builder/packages/wivrn-server/PKGBUILD
+          sed -i "/^sha256sums=/ {s|('\(.*\)')|(\n  '\\1'\n  'SKIP'\n)|;}" /home/builder/packages/wivrn-server/PKGBUILD
+          sed -i "/^build() {/a\\        cp \"\$srcdir/1000-metro_awakening_ignore_malformed.patch\" \"WiVRn-\$pkgver/patches/monado\"" /home/builder/packages/wivrn-server/PKGBUILD
 
           # Build package
           paru -B --noconfirm /home/builder/packages/wivrn-server
-        "
+        '
 
     - name: Add packages to repo
       run: |
