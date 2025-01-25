@@ -53,16 +53,16 @@ jobs:
 
           # Modify PKGBUILD to include patch
           sed -i '/^source=(/ {
-              s|("\(.*\)")|(\n  "\1"\n  https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\n)|;
+              s|(\"\\(.*\\)\")|(\n  \"\\1\"\n  https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\n)|;
           }' /home/builder/packages/wivrn-server/PKGBUILD
 
           sed -i '/^sha256sums=/ {
-              s|('\''\(.*\)'\'')|(\n  '\''\1'\''\n  '\''SKIP'\''\n)|;
+              s|('\''\\(.*\\)'\'')|(\n  '\''\\1'\''\n  '\''SKIP'\''\n)|;
           }' /home/builder/packages/wivrn-server/PKGBUILD
 
           sed -i '/^build() {/,/^}/ {
-              /^\s*cd "WiVRn-\$pkgver"/i \
-                  cp "$srcdir\/1000-metro_awakening_ignore_malformed.patch" "WiVRn-$pkgver\/patches\/monado"
+              /^\s*cd \"WiVRn-\$pkgver\"/i \
+                  cp \"\$srcdir\/1000-metro_awakening_ignore_malformed.patch\" \"WiVRn-\$pkgver\/patches\/monado\"
           }' /home/builder/packages/wivrn-server/PKGBUILD
 
           # sed -i '/^source=(/ {s|("\(.*\)")|(\n  "\1"\n  https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\n)|;}' /home/builder/packages/wivrn-server/PKGBUILD
