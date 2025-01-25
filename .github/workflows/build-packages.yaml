@@ -75,7 +75,7 @@ jobs:
       run: |
         mkdir -p repo
         mv /home/builder/new_packages/* repo
-        repo-add repo/gjpin.db.tar.zst repo/*.pkg.tar.zst
+        repo-add repo/custom.db.tar.zst repo/*.pkg.tar.zst
         
     - name: Commit and Push Repo
       run: |
