@@ -40,7 +40,7 @@ jobs:
 
     - name: Build AUR packages
       run: |
-        sudo -u builder bash -c '
+        sudo -u builder bash -c "
           # Disable debug builds
           echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
 
@@ -67,7 +67,7 @@ jobs:
 
           # Build package
           paru -B --noconfirm /home/builder/packages/wivrn-dashboard
-        '
+        "
 
     - name: Add packages to repo
       run: |
