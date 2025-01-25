@@ -1,4 +1,4 @@
-name: Build AUR Packages
+name: Build WiVRn server
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
     - name: Update packages and install git
       run: |
         pacman -Syyu --noconfirm
-        pacman -S --noconfirm --needed git gnupg 
+        pacman -S --noconfirm --needed git gnupg pacman-contrib
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Checkout Repository
@@ -56,7 +56,7 @@ jobs:
           sed -i '/^sha256sums=/ {s|('\''\(.*\)'\'')|(\n  '\''\1'\''\n  '\''SKIP'\''\n)|;}' /home/builder/packages/wivrn-server/PKGBUILD
           sed -i '/^build() {/a\        cp $srcdir/1000-metro_awakening_ignore_malformed.patch" "WiVRn-$pkgver/patches/monado' /home/builder/packages/wivrn-server/PKGBUILD
 
-          # Build
+          # Build package
           paru -B --noconfirm /home/builder/packages/wivrn-server
         '
 
