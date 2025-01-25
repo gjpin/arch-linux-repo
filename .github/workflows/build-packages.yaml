@@ -53,9 +53,10 @@ jobs:
 
           # Packages list
           packages=(
-            "wlx-overlay-s-git"
-            "opencomposite-git"
+            "xr-hardware-git"
             "monado-git"    
+            "opencomposite-git"
+            "wlx-overlay-s-git"
             "wivrn-server"
             "wivrn-dashboard"
             "alvr-git"
@@ -75,7 +76,7 @@ jobs:
       run: |
         mkdir -p repo
         mv /home/builder/new_packages/* repo
-        repo-add repo/custom.db.tar.zst repo/*.pkg.tar.zst
+        repo-add repo/gjpin.db.tar.zst repo/*.pkg.tar.zst
         
     - name: Commit and Push Repo
       run: |
