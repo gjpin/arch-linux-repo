@@ -47,10 +47,6 @@ jobs:
           # Disable debug builds
           echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
 
-          # Import GPG key
-          echo ${PRIVATE_PGP_KEY} | gpg --import
-          gpg --no-tty --batch --passphrase ${PRIVATE_PGP_KEY_PASSPHRASE} --pinentry-mode loopback --output /tmp/private.gpg --armor --export-secret-key B5EA2BA20273523B6334317E0068DD0C200B3096
-
           # Create directories
           mkdir -p /home/builder/{packages,new_packages}
           export PKGDEST=/home/builder/new_packages
@@ -71,7 +67,7 @@ jobs:
             git clone "https://aur.archlinux.org/$pkg.git" /home/builder/packages/$pkg
 
             # Build package
-            paru -B --noconfirm --sign=/tmp/private.gpg --signdb=/tmp/private.gpg /home/builder/packages/$pkg
+            paru -B --noconfirm /home/builder/packages/$pkg
           done
         '
 
@@ -79,7 +75,7 @@ jobs:
       run: |
         mkdir -p repo
         mv /home/builder/new_packages/* repo
-        repo-add repo/custom.db.tar.zst repo/*.zst
+        repo-add repo/custom.db.tar.zst repo/*.pkg.tar.zst
         
     - name: Commit and Push Repo
       run: |
