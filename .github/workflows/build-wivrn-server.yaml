@@ -42,14 +42,14 @@ jobs:
       run: |
         sudo -u builder bash -c "
           # Disable debug builds
-          echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
+          echo 'OPTIONS=(!debug)' > /home/builder/.makepkg.conf
 
           # Create directories
           mkdir -p /home/builder/{packages,new_packages}
           export PKGDEST=/home/builder/new_packages
 
           # Clone wivrn-server PKGBUILD
-          git clone "https://aur.archlinux.org/wivrn-server.git" /home/builder/packages/wivrn-server
+          git clone https://aur.archlinux.org/wivrn-server.git /home/builder/packages/wivrn-server
 
           # Modify PKGBUILD to include patch
           sed -i '/^source=(/ {

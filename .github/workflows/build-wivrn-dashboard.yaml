@@ -42,14 +42,14 @@ jobs:
       run: |
         sudo -u builder bash -c "
           # Disable debug builds
-          echo "OPTIONS=(!debug)" > /home/builder/.makepkg.conf
+          echo 'OPTIONS=(!debug)' > /home/builder/.makepkg.conf
 
           # Create directories
           mkdir -p /home/builder/{packages,new_packages}
           export PKGDEST=/home/builder/new_packages
 
           # Clone wivrn-dashboard PKGBUILD
-          git clone "https://aur.archlinux.org/wivrn-dashboard.git" /home/builder/packages/wivrn-dashboard
+          git clone https://aur.archlinux.org/wivrn-dashboard.git /home/builder/packages/wivrn-dashboard
 
           # Modify PKGBUILD to include patch
           sed -i '/^source=(/ {
