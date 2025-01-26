@@ -52,9 +52,9 @@ jobs:
           git clone https://aur.archlinux.org/wivrn-dashboard.git /home/builder/packages/wivrn-dashboard
 
           # Modify PKGBUILD to include patch
-          sed -i "/^source=(/ {s|(\"\\(.*\\)\")|(\n  \"\\1\"\n  \"https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\"\n)|;}" /home/builder/packages/wivrn-server/PKGBUILD
-          sed -i "/^sha256sums=/ {s|('\(.*\)')|(\n  '\\1'\n  'd269577743bd1dd24e337f06e93e2dc2725d8bb7574006955cd7e2a170fcfeb9'\n)|;}" /home/builder/packages/wivrn-server/PKGBUILD
-          sed -i "/^build() {/a\\        cp \"\$srcdir/1000-metro_awakening_ignore_malformed.patch\" \"WiVRn-\$pkgver/patches/monado\"" /home/builder/packages/wivrn-server/PKGBUILD
+          sed -i "/^source=(/ {s|(\"\\(.*\\)\")|(\n  \"\\1\"\n  \"https://raw.githubusercontent.com/gjpin/arch-linux-repo/refs/heads/main/patches/wivrn/1000-metro_awakening_ignore_malformed.patch\"\n)|;}" /home/builder/packages/wivrn-dashboard/PKGBUILD
+          sed -i "/^sha256sums=/ {s|('\(.*\)')|(\n  '\\1'\n  'd269577743bd1dd24e337f06e93e2dc2725d8bb7574006955cd7e2a170fcfeb9'\n)|;}" /home/builder/packages/wivrn-dashboard/PKGBUILD
+          sed -i "/^build() {/a\\        cp \"\$srcdir/1000-metro_awakening_ignore_malformed.patch\" \"WiVRn-\$pkgver/patches/monado\"" /home/builder/packages/wivrn-dashboard/PKGBUILD
 
           # Build package
           paru -B --noconfirm /home/builder/packages/wivrn-dashboard

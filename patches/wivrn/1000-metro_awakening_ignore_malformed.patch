@@ -1,13 +1,3 @@
-From 3fe8fe41af781d18a61c644e7446c8c91f8365be Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Cl=C3=A1udio=20=27Patola=27=20Sampaio?= <patola@gmail.com>
-Date: Sun, 19 Jan 2025 15:01:57 +0100
-Subject: [PATCH] Ignored malformed flags from metro awakening init
-
----
- src/xrt/state_trackers/oxr/oxr_api_space.c     | 2 +-
- src/xrt/state_trackers/oxr/oxr_api_swapchain.c | 3 +--
- 2 files changed, 2 insertions(+), 3 deletions(-)
-
 diff --git a/src/xrt/state_trackers/oxr/oxr_api_space.c b/src/xrt/state_trackers/oxr/oxr_api_space.c
 index 8526b6644..896507685 100644
 --- a/src/xrt/state_trackers/oxr/oxr_api_space.c
@@ -35,5 +25,3 @@ index 20f371312..c697f27e8 100644
                                  createInfo->usageFlags);
         }
         bool format_supported = false;
--- 
-2.48.1
