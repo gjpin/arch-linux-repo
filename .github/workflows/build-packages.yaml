@@ -58,6 +58,7 @@ jobs:
             "wivrn-dashboard"
             "alvr-git"
             "envision-xr-git"
+            "xrizer-git"
           )
 
           # Build packages and add them to repo
