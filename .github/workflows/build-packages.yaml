@@ -2,8 +2,8 @@ name: Build AUR Packages
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 6' # Weekly build (every Saturday at midnight)
+  # schedule:
+  #   - cron: '0 0 * * 6' # Weekly build (every Saturday at midnight)
 
 permissions:
   contents: write
